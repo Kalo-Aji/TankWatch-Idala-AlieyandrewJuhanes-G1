@@ -1,15 +1,103 @@
 
 {% extends "base.html" %}
 
+{% block title %}Dashboard | CampusConnect{% endblock %}
+
+{% block extra_head %}
+<style>
+  .dashboard-page {
+    --dashboard-dark: #103c32;
+    --dashboard-deep: #0b2d26;
+    --dashboard-mint: #a8e6c8;
+    --dashboard-ink: #153d33;
+    --dashboard-muted: #55766b;
+    background: var(--dashboard-deep);
+    border-radius: 1.25rem;
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+  }
+  .dashboard-hero {
+    background: var(--dashboard-mint);
+    border-radius: 1rem;
+    color: var(--dashboard-deep);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  .dashboard-hero p { color: #315f50; }
+  .dashboard-hero .badge { background: var(--dashboard-dark) !important; color: #fff !important; }
+  .dashboard-card {
+    background: #e8f7ef;
+    border: 1px solid #c8ead8;
+    border-radius: 1rem;
+    height: 100%;
+    padding: 1.25rem;
+  }
+  .dashboard-label {
+    color: var(--dashboard-dark);
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .dashboard-value { color: var(--dashboard-ink); }
+  .dashboard-action {
+    background: var(--dashboard-mint);
+    border-color: var(--dashboard-mint);
+    color: var(--dashboard-deep);
+    font-weight: 600;
+  }
+  .dashboard-action:hover {
+    background: #c1f0d7;
+    border-color: #c1f0d7;
+    color: var(--dashboard-deep);
+  }
+  .dashboard-page > .d-flex > p { color: #d3eee2 !important; }
+  .dashboard-page .btn-outline-success { border-color: var(--dashboard-mint); color: var(--dashboard-mint); }
+  .dashboard-page .btn-outline-success:hover { background: var(--dashboard-mint); color: var(--dashboard-deep); }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Welcome, {{ user.first_name|default:user.username }}!</h2>
-<ul>
-    <li>Role: {{ user.get_role_display }}</li>
-    <li>Course: {{ user.course|default:"Not set" }}</li>
-    <li>Members: {{ member_count }}</li>
-    <li>Last login: {{ user.last_login|date:"M d, Y" }}</li>
-</ul>
-{% if is_admin %}
-    <a href="{% url 'admin_panel' %}">Open admin panel</a>
-{% endif %}
+<div class="dashboard-page">
+  <section class="dashboard-hero mb-4">
+    <span class="badge rounded-pill mb-3">CAMPUSCONNECT</span>
+    <h1 class="display-6 fw-semibold mb-2">Welcome, {{ user.first_name|default:user.username }}!</h1>
+    <p class="mb-0">Here’s a quick look at your campus account.</p>
+  </section>
+
+  <div class="row g-3">
+    <div class="col-sm-6 col-xl-3">
+      <section class="dashboard-card">
+        <div class="dashboard-label mb-2">Your role</div>
+        <div class="dashboard-value fs-5 fw-semibold">{{ user.get_role_display }}</div>
+      </section>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <section class="dashboard-card">
+        <div class="dashboard-label mb-2">Course</div>
+        <div class="dashboard-value fs-5 fw-semibold">{{ user.course|default:"Not set" }}</div>
+      </section>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <section class="dashboard-card">
+        <div class="dashboard-label mb-2">Community members</div>
+        <div class="dashboard-value fs-3 fw-semibold">{{ member_count }}</div>
+      </section>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <section class="dashboard-card">
+        <div class="dashboard-label mb-2">Last login</div>
+        <div class="dashboard-value fs-5 fw-semibold">{{ user.last_login|date:"M d, Y" }}</div>
+      </section>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4">
+    <p class="mb-0 text-secondary">Need to update your details? Visit your profile.</p>
+    <div class="d-flex gap-2">
+      <a class="btn dashboard-action" href="{% url 'profile' %}">Edit profile</a>
+      {% if is_admin %}
+        <a class="btn btn-outline-success" href="{% url 'admin_panel' %}">Admin panel</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
 {% endblock %}

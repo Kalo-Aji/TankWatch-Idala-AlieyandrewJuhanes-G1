@@ -1,11 +1,32 @@
 {% extends "base.html" %}
 
+{% block title %}Log in | CampusConnect{% endblock %}
+
 {% block content %}
-<h2>Log in</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Log in</button>
-</form>
-<p>No account? <a href="{% url 'signup' %}">Sign up</a></p>
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h3 mb-4">Log in</h1>
+        <form method="post">
+          {% csrf_token %}
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+          {% endif %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% for error in field.errors %}
+                <div class="text-danger small mt-1">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <button class="btn btn-primary w-100" type="submit">Log in</button>
+        </form>
+        <p class="mb-0 mt-3 text-center">No account? <a href="{% url 'signup' %}">Sign up</a></p>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
