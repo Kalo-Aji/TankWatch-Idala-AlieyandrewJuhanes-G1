@@ -72,16 +72,16 @@ class OperatorDashboardView(RoleRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Mock telemetry dataset for TankWatch industrial telemetry
+        # LPG Gas Tank Telemetry dataset for TankWatch
         context["tanks"] = [
-            {"id": "TK-101", "name": "Main Water Reservoir", "type": "Potable Water", "level": 82, "status": "Normal", "badge": "success", "temp": "21.4°C"},
-            {"id": "TK-102", "name": "Backup Retention Basin", "type": "Raw Water", "level": 45, "status": "Moderate", "badge": "warning", "temp": "23.1°C"},
-            {"id": "TK-103", "name": "Chemical Purification Tank", "type": "Disinfectant", "level": 94, "status": "High Warning", "badge": "danger", "temp": "19.8°C"},
-            {"id": "TK-104", "name": "Rainwater Harvest Vault", "type": "Harvested", "level": 63, "status": "Normal", "badge": "success", "temp": "20.2°C"},
+            {"id": "LPG-01", "name": "Domestic Cooking Gas (50kg Bank)", "type": "LPG Cylinders", "capacity": "2,500 kg", "current_volume": "1,950 kg", "level": 78, "status": "Optimal", "badge": "success", "temp": "26.1°C", "ullage": "550 kg"},
+            {"id": "LPG-02", "name": "Commercial Kitchen Supply", "type": "Bulk LPG Manifold", "capacity": "5,000 kg", "current_volume": "3,100 kg", "level": 62, "status": "Stable", "badge": "info", "temp": "25.4°C", "ullage": "1,900 kg"},
+            {"id": "LPG-03", "name": "Laundry Boiler Gas Tank", "type": "Industrial LPG", "capacity": "10,000 kg", "current_volume": "8,600 kg", "level": 86, "status": "High Stock", "badge": "success", "temp": "27.0°C", "ullage": "1,400 kg"},
+            {"id": "LPG-04", "name": "Residential Household Reserve", "type": "11kg Cylinders", "capacity": "550 kg", "current_volume": "132 kg", "level": 24, "status": "Low — Refill Soon", "badge": "warning", "temp": "25.8°C", "ullage": "418 kg"},
         ]
         context["active_alarms"] = 1
-        context["pumps_active"] = 3
-        context["role_title"] = "Tank Operator & Staff"
+        context["pumps_active"] = 4
+        context["role_title"] = "LPG Tank Monitoring Technician"
         return context
 
 
@@ -91,8 +91,8 @@ class MemberDashboardView(RoleRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["role_title"] = "Client / Member"
-        context["assigned_tank"] = "Building B - Potable Tank (TK-101)"
-        context["daily_usage"] = "142 Liters"
-        context["supply_status"] = "Continuous / Optimal"
+        context["role_title"] = "LPG Supply Monitor / Subscriber"
+        context["assigned_tank"] = "LPG-03 — Laundry Boiler Gas Tank"
+        context["daily_usage"] = "42 kg LPG Consumed Today"
+        context["supply_status"] = "Pressure Normal / Valve Open"
         return context

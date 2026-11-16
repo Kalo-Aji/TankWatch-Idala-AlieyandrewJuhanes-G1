@@ -30,3 +30,8 @@ class CustomUser(AbstractUser):
 
     def is_member(self):
         return self.role in (self.Role.MEMBER, self.Role.STUDENT)
+
+    def save(self, *args, **kwargs):
+        if self.is_superuser and self.role != self.Role.ADMIN:
+            self.role = self.Role.ADMIN
+        super().save(*args, **kwargs)
