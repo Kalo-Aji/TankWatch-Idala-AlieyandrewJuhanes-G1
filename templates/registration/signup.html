@@ -1,24 +1,24 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}Create Account | TankWatch{% endblock %}
+{% block title %}Fuel Operations Account Registration | TankWatch{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center py-3">
-  <div class="col-lg-7 col-md-9">
-    <div class="card card-elevated p-4 shadow-sm">
+<div class="row justify-content-center py-4">
+  <div class="col-lg-8 col-md-10">
+    <div class="card card-modern p-4 p-md-5">
       <div class="text-center mb-4">
-        <div class="d-inline-flex p-3 rounded-circle bg-info-subtle text-info mb-2">
-          <i class="bi bi-person-plus-fill fs-3"></i>
+        <div class="d-inline-flex p-3 rounded-circle bg-warning bg-opacity-10 text-warning mb-2" style="box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);">
+          <i class="bi bi-person-badge-fill fs-2"></i>
         </div>
-        <h3 class="fw-bold mb-1">Create Your Account</h3>
-        <p class="text-secondary small mb-0">Join the TankWatch monitoring network with role-based access</p>
+        <h3 class="fw-bold mb-1 text-white">Register LPG Monitoring Account</h3>
+        <p class="text-secondary small mb-0">Join the TankWatch fuel telemetry and automated monitoring network</p>
       </div>
 
       <form method="post" novalidate>
         {% csrf_token %}
 
         {% if form.non_field_errors %}
-          <div class="alert alert-danger py-2 small" role="alert">
+          <div class="alert alert-danger py-2 small border-0" role="alert">
             {% for error in form.non_field_errors %}
               <div><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ error }}</div>
             {% endfor %}
@@ -28,34 +28,34 @@
         <div class="row g-3">
           <!-- Username -->
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.username.id_for_label }}">
-              Username <span class="text-danger">*</span>
+            <label class="form-label text-light fw-medium small" for="{{ form.username.id_for_label }}">
+              Username <span class="text-warning">*</span>
             </label>
             {{ form.username }}
             {% for error in form.username.errors %}
               <div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>
             {% endfor %}
             {% if form.username.help_text %}
-              <div class="form-text small">{{ form.username.help_text }}</div>
+              <div class="text-secondary small" style="font-size: 0.75rem;">{{ form.username.help_text }}</div>
             {% endif %}
           </div>
 
           <!-- Email -->
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.email.id_for_label }}">
-              Email Address <span class="text-danger">*</span>
+            <label class="form-label text-light fw-medium small" for="{{ form.email.id_for_label }}">
+              Email Address <span class="text-warning">*</span>
             </label>
             {{ form.email }}
             {% for error in form.email.errors %}
               <div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>
             {% endfor %}
-            <div class="form-text small">Must be a valid and unique email.</div>
+            <div class="text-secondary small" style="font-size: 0.75rem;">Unique corporate or operational email.</div>
           </div>
 
           <!-- First Name -->
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.first_name.id_for_label }}">
-              First Name <span class="text-danger">*</span>
+            <label class="form-label text-light fw-medium small" for="{{ form.first_name.id_for_label }}">
+              First Name <span class="text-warning">*</span>
             </label>
             {{ form.first_name }}
             {% for error in form.first_name.errors %}
@@ -65,8 +65,8 @@
 
           <!-- Last Name -->
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.last_name.id_for_label }}">
-              Last Name <span class="text-danger">*</span>
+            <label class="form-label text-light fw-medium small" for="{{ form.last_name.id_for_label }}">
+              Last Name <span class="text-warning">*</span>
             </label>
             {{ form.last_name }}
             {% for error in form.last_name.errors %}
@@ -76,66 +76,58 @@
 
           <!-- Contact Number -->
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.contact_number.id_for_label }}">
-              Contact Number
+            <label class="form-label text-light fw-medium small" for="{{ form.contact_number.id_for_label }}">
+              Emergency Contact / Mobile
             </label>
             {{ form.contact_number }}
             {% for error in form.contact_number.errors %}
               <div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>
             {% endfor %}
-            <div class="form-text small">Phone or mobile number (optional).</div>
           </div>
 
           <!-- Role Selection -->
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.role.id_for_label }}">
-              Assigned Role <span class="text-danger">*</span>
+            <label class="form-label text-light fw-medium small" for="{{ form.role.id_for_label }}">
+              Assigned Operational Role <span class="text-warning">*</span>
             </label>
             {{ form.role }}
             {% for error in form.role.errors %}
               <div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>
             {% endfor %}
-            {% if form.role.help_text %}
-              <div class="form-text small">{{ form.role.help_text }}</div>
-            {% endif %}
           </div>
 
           <!-- Password 1 -->
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.password1.id_for_label }}">
-              Password <span class="text-danger">*</span>
+            <label class="form-label text-light fw-medium small" for="{{ form.password1.id_for_label }}">
+              Security Password <span class="text-warning">*</span>
             </label>
             {{ form.password1 }}
             {% for error in form.password1.errors %}
               <div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>
             {% endfor %}
-            {% if form.password1.help_text %}
-              <div class="form-text small" style="font-size: 0.75rem;">{{ form.password1.help_text }}</div>
-            {% endif %}
           </div>
 
-          <!-- Password 2 (Confirmation) -->
+          <!-- Password 2 (Confirm) -->
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.password2.id_for_label }}">
-              Confirm Password <span class="text-danger">*</span>
+            <label class="form-label text-light fw-medium small" for="{{ form.password2.id_for_label }}">
+              Confirm Security Password <span class="text-warning">*</span>
             </label>
             {{ form.password2 }}
             {% for error in form.password2.errors %}
               <div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i>{{ error }}</div>
             {% endfor %}
-            <div class="form-text small">Re-enter the password for confirmation.</div>
           </div>
         </div>
 
-        <button class="btn btn-info w-100 py-2 fw-semibold text-dark mt-4 mb-3 shadow-sm" type="submit">
-          <i class="bi bi-check-circle-fill me-1"></i>Register Account
+        <button class="btn btn-warning w-100 py-2 fw-bold text-dark mt-4 mb-3 shadow" type="submit">
+          <i class="bi bi-check-circle-fill me-1"></i>Complete Account Registration
         </button>
       </form>
 
-      <div class="text-center pt-3 border-top small">
-        <span class="text-secondary">Already registered?</span>
-        <a class="text-primary fw-semibold text-decoration-none ms-1" href="{% url 'login' %}">
-          Log in to your account
+      <div class="text-center pt-3 border-top border-secondary border-opacity-25 small">
+        <span class="text-secondary">Already have a station account?</span>
+        <a class="text-warning fw-semibold text-decoration-none ms-1" href="{% url 'login' %}">
+          Log in here
         </a>
       </div>
     </div>

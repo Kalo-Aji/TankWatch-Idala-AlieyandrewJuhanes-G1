@@ -1,25 +1,25 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}Administrator Dashboard | TankWatch{% endblock %}
+{% block title %}LPG Gas Monitoring Director Dashboard | TankWatch{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
   <div class="col-12">
-    <div class="p-4 rounded-4 text-white shadow-sm" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);">
+    <div class="card card-modern p-4" style="background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); border-left: 5px solid #f59e0b;">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
-          <span class="badge bg-warning text-dark px-3 py-1 rounded-pill mb-2 fw-semibold">
-            <i class="bi bi-shield-check me-1"></i>ADMINISTRATOR LEVEL ACCESS
+          <span class="badge bg-warning text-dark px-3 py-1 rounded-pill mb-2 fw-bold">
+            <i class="bi bi-shield-check me-1"></i>PETROL LPG Supply Network Administrator
           </span>
-          <h1 class="h2 fw-bold mb-1">Welcome, {{ user.first_name|default:user.username }}!</h1>
-          <p class="text-white-50 mb-0">System Control, User Auditing & Role Authorization Center</p>
+          <h1 class="h2 fw-bold mb-1 text-white">Welcome, {{ user.first_name|default:user.username }}!</h1>
+          <p class="text-white-50 mb-0">Station Fleet Control, Fuel Telemetry Governance & User Authorization</p>
         </div>
         <div class="d-flex gap-2">
-          <a class="btn btn-warning btn-sm px-3 fw-semibold" href="/admin/" target="_blank">
-            <i class="bi bi-gear-fill me-1"></i>Django Admin Panel
+          <a class="btn btn-warning btn-sm px-3 fw-bold text-dark shadow" href="{% url 'custom_admin:home' %}">
+            <i class="bi bi-gear-wide-connected me-1"></i>Custom Admin Console
           </a>
           <a class="btn btn-outline-light btn-sm px-3" href="{% url 'profile' %}">
-            <i class="bi bi-person-fill me-1"></i>My Profile
+            <i class="bi bi-person-fill me-1"></i>Profile
           </a>
         </div>
       </div>
@@ -30,54 +30,54 @@
 <!-- Metrics Overview Cards -->
 <div class="row g-3 mb-4">
   <div class="col-sm-6 col-xl-3">
-    <div class="card card-elevated h-100 p-3">
+    <div class="card card-modern p-3">
       <div class="d-flex align-items-center justify-content-between mb-2">
         <span class="text-secondary small text-uppercase fw-bold">Total Accounts</span>
-        <div class="bg-primary-subtle text-primary p-2 rounded-circle">
+        <div class="p-2 rounded-circle bg-primary bg-opacity-10 text-primary">
           <i class="bi bi-people-fill fs-5"></i>
         </div>
       </div>
-      <h2 class="display-6 fw-bold mb-0 text-primary">{{ total_users }}</h2>
-      <div class="text-muted small mt-1">Active users in database</div>
+      <h2 class="display-6 fw-bold mb-0 text-white">{{ total_users }}</h2>
+      <div class="text-secondary small mt-1">Registered station personnel</div>
     </div>
   </div>
 
   <div class="col-sm-6 col-xl-3">
-    <div class="card card-elevated h-100 p-3">
+    <div class="card card-modern p-3">
       <div class="d-flex align-items-center justify-content-between mb-2">
         <span class="text-secondary small text-uppercase fw-bold">Administrators</span>
-        <div class="bg-warning-subtle text-warning-emphasis p-2 rounded-circle">
+        <div class="p-2 rounded-circle bg-warning bg-opacity-10 text-warning">
           <i class="bi bi-shield-lock-fill fs-5"></i>
         </div>
       </div>
-      <h2 class="display-6 fw-bold mb-0 text-warning-emphasis">{{ admin_count }}</h2>
-      <div class="text-muted small mt-1">Full privileged staff</div>
+      <h2 class="display-6 fw-bold mb-0 text-warning">{{ admin_count }}</h2>
+      <div class="text-secondary small mt-1">Full network authorization</div>
     </div>
   </div>
 
   <div class="col-sm-6 col-xl-3">
-    <div class="card card-elevated h-100 p-3">
+    <div class="card card-modern p-3">
       <div class="d-flex align-items-center justify-content-between mb-2">
-        <span class="text-secondary small text-uppercase fw-bold">Operators</span>
-        <div class="bg-info-subtle text-info p-2 rounded-circle">
-          <i class="bi bi-activity fs-5"></i>
+        <span class="text-secondary small text-uppercase fw-bold">Fuel Operators</span>
+        <div class="p-2 rounded-circle bg-info bg-opacity-10 text-info">
+          <i class="bi bi-fuel-pump fs-5"></i>
         </div>
       </div>
       <h2 class="display-6 fw-bold mb-0 text-info">{{ operator_count }}</h2>
-      <div class="text-muted small mt-1">Tank monitoring staff</div>
+      <div class="text-secondary small mt-1">Tank yard & forecourt crew</div>
     </div>
   </div>
 
   <div class="col-sm-6 col-xl-3">
-    <div class="card card-elevated h-100 p-3">
+    <div class="card card-modern p-3">
       <div class="d-flex align-items-center justify-content-between mb-2">
-        <span class="text-secondary small text-uppercase fw-bold">Clients / Members</span>
-        <div class="bg-success-subtle text-success p-2 rounded-circle">
-          <i class="bi bi-person-check-fill fs-5"></i>
+        <span class="text-secondary small text-uppercase fw-bold">Fleet Clients</span>
+        <div class="p-2 rounded-circle bg-success bg-opacity-10 text-success">
+          <i class="bi bi-truck fs-5"></i>
         </div>
       </div>
       <h2 class="display-6 fw-bold mb-0 text-success">{{ member_count }}</h2>
-      <div class="text-muted small mt-1">End-consumer accounts</div>
+      <div class="text-secondary small mt-1">Commercial B2B consumers</div>
     </div>
   </div>
 </div>
@@ -85,17 +85,19 @@
 <!-- Registered Users Management Table -->
 <div class="row">
   <div class="col-12">
-    <div class="card card-elevated shadow-sm">
-      <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+    <div class="card card-modern">
+      <div class="card-header bg-transparent py-3 border-bottom border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
         <div>
-          <h5 class="card-title fw-bold mb-0">Registered User Accounts</h5>
-          <small class="text-muted">Viewing all user profiles and role assignments</small>
+          <h5 class="fw-bold mb-0 text-white"><i class="bi bi-person-lines-fill text-warning me-2"></i>Station Personnel & Client Directory</h5>
+          <small class="text-secondary">Network users with system access permissions</small>
         </div>
-        <span class="badge bg-secondary-subtle text-secondary-emphasis">Read & Audit View</span>
+        <a class="btn btn-outline-warning btn-sm fw-semibold" href="{% url 'custom_admin:user_list' %}">
+          <i class="bi bi-sliders me-1"></i>Manage in Admin Console &rarr;
+        </a>
       </div>
       <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
+        <table class="table table-modern table-hover align-middle mb-0">
+          <thead>
             <tr>
               <th>User</th>
               <th>Full Name</th>
@@ -111,41 +113,41 @@
               <tr>
                 <td>
                   <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle bg-dark-subtle d-flex align-items-center justify-content-center fw-bold text-dark" style="width: 36px; height: 36px;">
+                    <div class="rounded-circle bg-dark text-warning border border-secondary border-opacity-50 d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;">
                       {{ account.username|slice:":1"|upper }}
                     </div>
                     <div>
-                      <div class="fw-semibold">@{{ account.username }}</div>
+                      <div class="fw-semibold text-white">@{{ account.username }}</div>
                       {% if account == user %}
-                        <span class="badge bg-primary-subtle text-primary" style="font-size: 0.65rem;">You</span>
+                        <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">You</span>
                       {% endif %}
                     </div>
                   </div>
                 </td>
-                <td>{{ account.get_full_name|default:"—" }}</td>
-                <td><code>{{ account.email|default:"No email" }}</code></td>
-                <td>{{ account.contact_number|default:"—" }}</td>
+                <td class="text-light">{{ account.get_full_name|default:"â€”" }}</td>
+                <td><code class="text-warning-emphasis">{{ account.email|default:"No email" }}</code></td>
+                <td class="text-secondary">{{ account.contact_number|default:"â€”" }}</td>
                 <td>
                   {% if account.role == "ADMIN" %}
-                    <span class="badge tw-badge-admin px-2 py-1"><i class="bi bi-shield-lock me-1"></i>Admin</span>
+                    <span class="badge badge-fuel-admin px-2 py-1"><i class="bi bi-shield-lock me-1"></i>Admin</span>
                   {% elif account.role == "OPERATOR" %}
-                    <span class="badge tw-badge-operator px-2 py-1"><i class="bi bi-activity me-1"></i>Operator</span>
+                    <span class="badge badge-fuel-operator px-2 py-1"><i class="bi bi-activity me-1"></i>Operator</span>
                   {% else %}
-                    <span class="badge tw-badge-member px-2 py-1"><i class="bi bi-person me-1"></i>Member</span>
+                    <span class="badge badge-fuel-member px-2 py-1"><i class="bi bi-person me-1"></i>Client</span>
                   {% endif %}
                 </td>
-                <td class="small text-muted">{{ account.date_joined|date:"M d, Y" }}</td>
+                <td class="small text-secondary">{{ account.date_joined|date:"M d, Y" }}</td>
                 <td>
                   {% if account.is_active %}
-                    <span class="badge bg-success-subtle text-success">Active</span>
+                    <span class="badge bg-success-subtle text-success border border-success">Active</span>
                   {% else %}
-                    <span class="badge bg-danger-subtle text-danger">Disabled</span>
+                    <span class="badge bg-danger-subtle text-danger border border-danger">Disabled</span>
                   {% endif %}
                 </td>
               </tr>
             {% empty %}
               <tr>
-                <td colspan="7" class="text-center py-4 text-muted">No registered users found.</td>
+                <td colspan="7" class="text-center py-4 text-secondary">No registered users found.</td>
               </tr>
             {% endfor %}
           </tbody>

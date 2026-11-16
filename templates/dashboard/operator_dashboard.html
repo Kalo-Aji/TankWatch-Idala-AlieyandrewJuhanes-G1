@@ -1,22 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Operator Dashboard | TankWatch{% endblock %}
+{% block title %}LPG Tank Telemetry Operator Console | TankWatch{% endblock %}
 
 {% block content %}
+<!-- Operator Banner -->
 <div class="row mb-4">
   <div class="col-12">
-    <div class="p-4 rounded-4 text-white shadow-sm" style="background: linear-gradient(135deg, #09342d 0%, #115e50 100%);">
+    <div class="card card-modern p-4" style="background: linear-gradient(135deg, #022c22 0%, #0f172a 100%); border-left: 5px solid #06b6d4;">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
-          <span class="badge bg-info text-dark px-3 py-1 rounded-pill mb-2 fw-semibold">
-            <i class="bi bi-activity me-1"></i>TANK OPERATOR & TELEMETRY
+          <span class="badge bg-info text-dark px-3 py-1 rounded-pill mb-2 fw-bold">
+            <i class="bi bi-broadcast me-1"></i>LPG TANK MONITORING &amp; GAS PRESSURE CONSOLE
           </span>
-          <h1 class="h2 fw-bold mb-1">Welcome, Operator {{ user.first_name|default:user.username }}!</h1>
-          <p class="text-white-50 mb-0">Industrial Tank Levels, Pressure Valves & Pump Monitoring Console</p>
+          <h1 class="h2 fw-bold mb-1 text-white">Operator: {{ user.first_name|default:user.username }}</h1>
+          <p class="text-white-50 mb-0">LPG Cylinder Banks, Bulk Tanks, Manifold Pressure &amp; Safety Sensor Telemetry</p>
         </div>
-        <div class="d-flex gap-2">
-          <span class="badge bg-success-subtle text-success border border-success p-2 d-flex align-items-center">
-            <i class="bi bi-broadcast me-2 fs-6"></i>Sensors Live (4/4 Online)
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-success bg-opacity-20 text-success border border-success p-2 d-flex align-items-center">
+            <i class="bi bi-broadcast-pin me-2 fs-6"></i>Pressure Sensors Online (4/4 Live)
           </span>
         </div>
       </div>
@@ -24,102 +25,111 @@
   </div>
 </div>
 
-<!-- Operator Stats Bar -->
+<!-- Forecourt Status Indicators -->
 <div class="row g-3 mb-4">
   <div class="col-md-4">
-    <div class="card card-elevated p-3">
+    <div class="card card-modern p-3">
       <div class="d-flex align-items-center justify-content-between">
         <div>
-          <span class="text-secondary small text-uppercase fw-bold">Active Pumps</span>
-          <h3 class="fw-bold text-dark mb-0">{{ pumps_active }} / 4 Running</h3>
+          <span class="text-secondary small text-uppercase fw-bold">Active Gas Lines</span>
+          <h3 class="fw-bold text-white mb-0">{{ pumps_active }} / 6 Active</h3>
+          <small class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Manifold Valves Normal</small>
         </div>
-        <div class="p-3 bg-success-subtle text-success rounded-circle">
-          <i class="bi bi-gear-wide-connected fs-4"></i>
+        <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle">
+          <i class="bi bi-fire fs-3"></i>
         </div>
       </div>
     </div>
   </div>
 
   <div class="col-md-4">
-    <div class="card card-elevated p-3">
+    <div class="card card-modern p-3">
       <div class="d-flex align-items-center justify-content-between">
         <div>
-          <span class="text-secondary small text-uppercase fw-bold">Active Alarms</span>
-          <h3 class="fw-bold text-danger mb-0">{{ active_alarms }} High Warning</h3>
+          <span class="text-secondary small text-uppercase fw-bold">Reserve Alert</span>
+          <h3 class="fw-bold text-warning mb-0">{{ active_alarms }} Low Tank Flag</h3>
+          <small class="text-warning"><i class="bi bi-exclamation-triangle-fill me-1"></i>LPG-04 Needs Cylinder Refill</small>
         </div>
-        <div class="p-3 bg-danger-subtle text-danger rounded-circle">
-          <i class="bi bi-bell-fill fs-4"></i>
+        <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-circle">
+          <i class="bi bi-bell-fill fs-3"></i>
         </div>
       </div>
     </div>
   </div>
 
   <div class="col-md-4">
-    <div class="card card-elevated p-3">
+    <div class="card card-modern p-3">
       <div class="d-flex align-items-center justify-content-between">
         <div>
-          <span class="text-secondary small text-uppercase fw-bold">Telemetry Health</span>
-          <h3 class="fw-bold text-primary mb-0">99.8% Sync</h3>
+          <span class="text-secondary small text-uppercase fw-bold">Gas Leak Detection</span>
+          <h3 class="fw-bold text-info mb-0">Safe — No Leak</h3>
+          <small class="text-info"><i class="bi bi-shield-check me-1"></i>Zero LPG Vapor Detected</small>
         </div>
-        <div class="p-3 bg-primary-subtle text-primary rounded-circle">
-          <i class="bi bi-wifi fs-4"></i>
+        <div class="p-3 bg-info bg-opacity-10 text-info rounded-circle">
+          <i class="bi bi-shield-fill-check fs-3"></i>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Live Tank Grid -->
+<!-- Live LPG Tank Telemetry Grid -->
 <div class="row g-4 mb-4">
-  <div class="col-12">
-    <h4 class="fw-bold text-dark"><i class="bi bi-grid-fill me-2 text-primary"></i>Live Tank Telemetry & Capacity</h4>
+  <div class="col-12 d-flex justify-content-between align-items-center">
+    <h4 class="fw-bold text-white mb-0">
+      <i class="bi bi-fire text-warning me-2"></i>LPG Cylinder &amp; Tank Pressure Levels — Real-Time
+    </h4>
+    <span class="badge bg-dark text-secondary border border-secondary border-opacity-50">Auto-Refreshed via Pressure Sensor</span>
   </div>
+
   {% for tank in tanks %}
     <div class="col-md-6 col-lg-3">
-      <div class="card card-elevated h-100 p-3">
+      <div class="card card-modern h-100 p-3" style="border-top: 4px solid {% if tank.level > 50 %}#10b981{% elif tank.level > 30 %}#06b6d4{% else %}#f59e0b{% endif %};">
         <div class="d-flex justify-content-between align-items-start mb-2">
           <div>
-            <span class="badge bg-secondary-subtle text-secondary small">{{ tank.id }}</span>
-            <h5 class="fw-bold text-dark mb-0 mt-1">{{ tank.name }}</h5>
-            <small class="text-muted">{{ tank.type }}</small>
+            <span class="badge bg-dark text-secondary border border-secondary border-opacity-50 small">{{ tank.id }}</span>
+            <h5 class="fw-bold text-white mb-0 mt-1">{{ tank.name }}</h5>
+            <small class="text-warning-emphasis fw-medium">{{ tank.type }}</small>
           </div>
-          <span class="badge bg-{{ tank.badge }}-subtle text-{{ tank.badge }} border border-{{ tank.badge }}">
+          <span class="badge bg-{{ tank.badge }} bg-opacity-10 text-{{ tank.badge }} border border-{{ tank.badge }} small">
             {{ tank.status }}
           </span>
         </div>
 
-        <div class="my-3 text-center">
-          <span class="display-5 fw-bold text-{{ tank.badge }}">{{ tank.level }}%</span>
-          <div class="text-muted small">Current Volume Capacity</div>
+        <div class="my-3 text-center p-3 rounded-3" style="background: rgba(0, 0, 0, 0.25);">
+          <span class="display-5 fw-bold text-{{ tank.badge }}" style="font-family: 'JetBrains Mono', monospace;">{{ tank.level }}%</span>
+          <div class="text-white small fw-semibold mt-1">{{ tank.current_volume }} <span class="text-secondary">/ {{ tank.capacity }}</span></div>
+          <div class="text-secondary small mt-1">Remaining Space: <strong class="text-light">{{ tank.ullage }}</strong></div>
         </div>
 
-        <div class="progress mb-3" style="height: 12px;" role="progressbar" aria-valuenow="{{ tank.level }}" aria-valuemin="0" aria-valuemax="100">
+        <!-- Pressure Gauge Bar -->
+        <div class="progress mb-3 bg-dark border border-secondary border-opacity-25" style="height: 14px;" role="progressbar" aria-valuenow="{{ tank.level }}" aria-valuemin="0" aria-valuemax="100">
           <div class="progress-bar progress-bar-striped progress-bar-animated bg-{{ tank.badge }}" style="width: {{ tank.level }}%;"></div>
         </div>
 
-        <div class="d-flex justify-content-between small text-muted border-top pt-2">
-          <span><i class="bi bi-thermometer-half me-1"></i>{{ tank.temp }}</span>
-          <span><i class="bi bi-check-circle-fill text-success me-1"></i>Valve Open</span>
+        <div class="d-flex justify-content-between small text-secondary border-top border-secondary border-opacity-25 pt-2">
+          <span><i class="bi bi-thermometer-half text-danger me-1"></i>Temp: <strong class="text-light">{{ tank.temp }}</strong></span>
+          <span><i class="bi bi-shield-check text-info me-1"></i>Leak: <strong class="text-success">None</strong></span>
         </div>
       </div>
     </div>
   {% endfor %}
 </div>
 
-<!-- Quick Operator Actions -->
+<!-- Operator Actions -->
 <div class="row">
   <div class="col-12">
-    <div class="card card-elevated p-4">
-      <h5 class="fw-bold mb-3"><i class="bi bi-sliders me-2 text-info"></i>Operator Actions</h5>
+    <div class="card card-modern p-4">
+      <h5 class="fw-bold mb-3 text-white"><i class="bi bi-sliders text-warning me-2"></i>Operator Actions &amp; Log Entries</h5>
       <div class="d-flex flex-wrap gap-2">
-        <button class="btn btn-outline-primary" type="button" onclick="alert('Manual telemetry log simulated!')">
-          <i class="bi bi-journal-plus me-1"></i>Log Manual Measurement
+        <button class="btn btn-outline-warning" type="button" onclick="alert('LPG Cylinder Delivery intake workflow initialized!')">
+          <i class="bi bi-truck me-1"></i>Log LPG Cylinder Delivery
         </button>
-        <button class="btn btn-outline-warning" type="button" onclick="alert('Diagnostic ping sent to all 4 tank sensors!')">
-          <i class="bi bi-cpu me-1"></i>Run Diagnostic Sensor Ping
+        <button class="btn btn-outline-info" type="button" onclick="alert('Manual pressure reading recorded across all 4 LPG tanks!')">
+          <i class="bi bi-pencil-square me-1"></i>Record Manual Pressure Reading
         </button>
-        <button class="btn btn-outline-secondary" type="button" onclick="alert('Exporting sensor logs...')">
-          <i class="bi bi-download me-1"></i>Export CSV Telemetry
+        <button class="btn btn-outline-danger" type="button" onclick="alert('Emergency gas shutoff valve test executed. System intact.')">
+          <i class="bi bi-shield-slash me-1"></i>Test Emergency Shut-Off Valve (ESD)
         </button>
       </div>
     </div>

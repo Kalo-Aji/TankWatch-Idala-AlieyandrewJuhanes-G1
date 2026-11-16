@@ -1,76 +1,76 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}My Profile | TankWatch{% endblock %}
+{% block title %}LPG System Profile | TankWatch{% endblock %}
 
 {% block content %}
-<div class="row g-4 justify-content-center">
-  <!-- Profile Information Summary Column -->
+<div class="row g-4 justify-content-center py-3">
+  <!-- Profile Summary Card -->
   <div class="col-lg-4">
-    <div class="card card-elevated h-100 p-4">
-      <div class="text-center pb-3 border-bottom mb-3">
-        <div class="rounded-circle bg-primary-subtle text-primary fw-bold display-5 d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 90px; height: 90px;">
+    <div class="card card-modern h-100 p-4">
+      <div class="text-center pb-3 border-bottom border-secondary border-opacity-25 mb-4">
+        <div class="rounded-circle bg-warning bg-opacity-10 text-warning fw-bold display-5 d-inline-flex align-items-center justify-content-center mb-3" style="width: 90px; height: 90px; box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);">
           {{ user.first_name|default:user.username|slice:":1"|upper }}
         </div>
-        <h4 class="fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h4>
-        <div class="text-muted small mb-2">@{{ user.username }}</div>
+        <h4 class="fw-bold mb-1 text-white">{{ user.get_full_name|default:user.username }}</h4>
+        <div class="text-secondary small mb-3">@{{ user.username }}</div>
         
         <div>
           {% if user.role == "ADMIN" %}
-            <span class="badge tw-badge-admin px-3 py-2 rounded-pill"><i class="bi bi-shield-lock me-1"></i>Administrator</span>
+            <span class="badge badge-fuel-admin px-3 py-2 rounded-pill"><i class="bi bi-shield-lock me-1"></i>Station Administrator</span>
           {% elif user.role == "OPERATOR" %}
-            <span class="badge tw-badge-operator px-3 py-2 rounded-pill"><i class="bi bi-activity me-1"></i>Operator</span>
+            <span class="badge badge-fuel-operator px-3 py-2 rounded-pill"><i class="bi bi-broadcast me-1"></i>Fuel Yard Operator</span>
           {% else %}
-            <span class="badge tw-badge-member px-3 py-2 rounded-pill"><i class="bi bi-person me-1"></i>Member</span>
+            <span class="badge badge-fuel-member px-3 py-2 rounded-pill"><i class="bi bi-person me-1"></i>Commercial Fleet Client</span>
           {% endif %}
         </div>
       </div>
 
-      <h6 class="text-secondary small fw-bold text-uppercase mb-3">Account Overview</h6>
+      <h6 class="text-secondary small fw-bold text-uppercase mb-3">Profile Data</h6>
       
       <div class="mb-3">
-        <label class="text-muted small d-block mb-1">Email Address</label>
-        <div class="fw-semibold text-dark">{{ user.email|default:"Not specified" }}</div>
+        <label class="text-secondary small d-block mb-1">Registered Email</label>
+        <div class="fw-semibold text-white">{{ user.email|default:"Not specified" }}</div>
       </div>
 
       <div class="mb-3">
-        <label class="text-muted small d-block mb-1">Contact Number</label>
-        <div class="fw-semibold text-dark">{{ user.contact_number|default:"Not specified" }}</div>
+        <label class="text-secondary small d-block mb-1">Emergency Phone</label>
+        <div class="fw-semibold text-white">{{ user.contact_number|default:"Not specified" }}</div>
       </div>
 
       <div class="mb-3">
-        <label class="text-muted small d-block mb-1">Member Since</label>
-        <div class="fw-medium text-dark">{{ user.date_joined|date:"F d, Y" }}</div>
+        <label class="text-secondary small d-block mb-1">Facility Enrolled</label>
+        <div class="fw-medium text-white">{{ user.date_joined|date:"F d, Y" }}</div>
       </div>
 
       <div class="mb-3">
-        <label class="text-muted small d-block mb-1">Last Login</label>
-        <div class="fw-medium text-dark">{{ user.last_login|date:"M d, Y - H:i"|default:"First session" }}</div>
+        <label class="text-secondary small d-block mb-1">Last System Session</label>
+        <div class="fw-medium text-warning">{{ user.last_login|date:"M d, Y - H:i"|default:"First operational session" }}</div>
       </div>
 
-      <div class="mt-auto pt-3 border-top">
-        <a class="btn btn-outline-secondary btn-sm w-100" href="{% url 'dashboard_dispatch' %}">
-          <i class="bi bi-arrow-left me-1"></i>Return to Dashboard
+      <div class="mt-auto pt-3 border-top border-secondary border-opacity-25">
+        <a class="btn btn-outline-secondary btn-sm w-100 text-light border-secondary" href="{% url 'dashboard_dispatch' %}">
+          <i class="bi bi-arrow-left me-1"></i>Return to Station Dashboard
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Profile Edit Form Column -->
+  <!-- Profile Edit Form Card -->
   <div class="col-lg-8">
-    <div class="card card-elevated p-4">
-      <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+    <div class="card card-modern p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary border-opacity-25">
         <div>
-          <h4 class="fw-bold mb-1"><i class="bi bi-pencil-square text-primary me-2"></i>Edit Profile Details</h4>
-          <p class="text-secondary small mb-0">Update your personal contact details and email address</p>
+          <h4 class="fw-bold mb-1 text-white"><i class="bi bi-pencil-square text-warning me-2"></i>Edit Station Profile</h4>
+          <p class="text-secondary small mb-0">Update contact and notification routing details</p>
         </div>
-        <span class="badge bg-secondary-subtle text-secondary">Self-Management Only</span>
+        <span class="badge bg-dark text-secondary border border-secondary border-opacity-25">Self-Service</span>
       </div>
 
       <form method="post" novalidate>
         {% csrf_token %}
 
         {% if form.non_field_errors %}
-          <div class="alert alert-danger">
+          <div class="alert alert-danger border-0">
             {% for error in form.non_field_errors %}
               <div>{{ error }}</div>
             {% endfor %}
@@ -79,8 +79,8 @@
 
         <div class="row g-3">
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.first_name.id_for_label }}">
-              {{ form.first_name.label }} <span class="text-danger">*</span>
+            <label class="form-label text-light fw-medium small" for="{{ form.first_name.id_for_label }}">
+              {{ form.first_name.label }} <span class="text-warning">*</span>
             </label>
             {{ form.first_name }}
             {% for error in form.first_name.errors %}
@@ -89,8 +89,8 @@
           </div>
 
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.last_name.id_for_label }}">
-              {{ form.last_name.label }} <span class="text-danger">*</span>
+            <label class="form-label text-light fw-medium small" for="{{ form.last_name.id_for_label }}">
+              {{ form.last_name.label }} <span class="text-warning">*</span>
             </label>
             {{ form.last_name }}
             {% for error in form.last_name.errors %}
@@ -99,33 +99,31 @@
           </div>
 
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.email.id_for_label }}">
-              {{ form.email.label }} <span class="text-danger">*</span>
+            <label class="form-label text-light fw-medium small" for="{{ form.email.id_for_label }}">
+              {{ form.email.label }} <span class="text-warning">*</span>
             </label>
             {{ form.email }}
             {% for error in form.email.errors %}
               <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
             {% endfor %}
-            <div class="form-text small">Must be a valid and unique email address.</div>
           </div>
 
           <div class="col-md-6">
-            <label class="form-label fw-semibold" for="{{ form.contact_number.id_for_label }}">
+            <label class="form-label text-light fw-medium small" for="{{ form.contact_number.id_for_label }}">
               {{ form.contact_number.label }}
             </label>
             {{ form.contact_number }}
             {% for error in form.contact_number.errors %}
               <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
             {% endfor %}
-            <div class="form-text small">Phone or mobile number for emergency notifications.</div>
           </div>
         </div>
 
-        <div class="d-flex align-items-center gap-2 mt-4 pt-3 border-top">
-          <button class="btn btn-primary px-4 fw-semibold" type="submit">
-            <i class="bi bi-check2-circle me-1"></i>Save Changes
+        <div class="d-flex align-items-center gap-2 mt-4 pt-3 border-top border-secondary border-opacity-25">
+          <button class="btn btn-warning px-4 fw-bold text-dark shadow" type="submit">
+            <i class="bi bi-check2-circle me-1"></i>Save Profile Changes
           </button>
-          <a class="btn btn-outline-secondary" href="{% url 'dashboard_dispatch' %}">Cancel</a>
+          <a class="btn btn-outline-secondary text-light border-secondary" href="{% url 'dashboard_dispatch' %}">Cancel</a>
         </div>
       </form>
     </div>

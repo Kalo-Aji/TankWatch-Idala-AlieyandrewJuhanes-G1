@@ -103,3 +103,37 @@ class BootstrapAuthenticationForm(AuthenticationForm):
         add_bootstrap_classes(self)
         self.fields["username"].widget.attrs.update({"placeholder": "Enter your username"})
         self.fields["password"].widget.attrs.update({"placeholder": "Enter your password"})
+
+
+class AdminUserEditForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=150, required=True, label="First Name")
+    last_name = forms.CharField(max_length=150, required=True, label="Last Name")
+    email = forms.EmailField(required=True, label="Email Address")
+    contact_number = forms.CharField(max_length=25, required=False, label="Contact Number")
+    role = forms.ChoiceField(
+        choices=CustomUser.Role.choices,
+        label="Assigned Role",
+        widget=forms.Select(attrs={"class": "form-select"})
+    )
+    is_active = forms.BooleanField(
+        required=False,
+        label="Account Active",
+        help_text="Uncheck to suspend or disable this user account."
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ("username", "email", "first_name", "last_name", "role", "contact_number", "is_active")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        add_bootstrap_classes(self)
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email", "").strip().lower()
+        if not email:
+            raise forms.ValidationError("Email is required.")
+        if CustomUser.objects.exclude(pk=self.instance.pk).filter(email__iexact=email).exists():
+            raise forms.ValidationError("This email address is already in use by another account.")
+        return email
+

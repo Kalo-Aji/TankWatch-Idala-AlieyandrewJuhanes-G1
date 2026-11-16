@@ -1,24 +1,24 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}Log In | TankWatch{% endblock %}
+{% block title %}LPG Gas Monitoring System Login | TankWatch{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center py-4">
+<div class="row justify-content-center py-5">
   <div class="col-md-6 col-lg-5">
-    <div class="card card-elevated p-4 shadow-sm">
+    <div class="card card-modern p-4 p-md-5">
       <div class="text-center mb-4">
-        <div class="d-inline-flex p-3 rounded-circle bg-primary-subtle text-primary mb-2">
-          <i class="bi bi-shield-lock-fill fs-3"></i>
+        <div class="d-inline-flex p-3 rounded-circle bg-warning bg-opacity-10 text-warning mb-3" style="box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);">
+          <i class="bi bi-fire-fill fs-2"></i>
         </div>
-        <h3 class="fw-bold mb-1">Account Login</h3>
-        <p class="text-secondary small mb-0">Enter your credentials to access your TankWatch portal</p>
+        <h3 class="fw-bold mb-1 text-white">Station Portal Login</h3>
+        <p class="text-secondary small mb-0">Enter your credentials to monitor petrol tanks & dispensers</p>
       </div>
 
       <form method="post" novalidate>
         {% csrf_token %}
 
         {% if form.non_field_errors %}
-          <div class="alert alert-danger py-2 small" role="alert">
+          <div class="alert alert-danger py-2 small border-0" role="alert">
             {% for error in form.non_field_errors %}
               <div><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ error }}</div>
             {% endfor %}
@@ -26,8 +26,8 @@
         {% endif %}
 
         <div class="mb-3">
-          <label class="form-label fw-semibold" for="{{ form.username.id_for_label }}">
-            <i class="bi bi-person me-1"></i>Username
+          <label class="form-label text-light fw-medium small" for="{{ form.username.id_for_label }}">
+            <i class="bi bi-person me-1 text-warning"></i>Station Username
           </label>
           {{ form.username }}
           {% for error in form.username.errors %}
@@ -36,8 +36,8 @@
         </div>
 
         <div class="mb-4">
-          <label class="form-label fw-semibold" for="{{ form.password.id_for_label }}">
-            <i class="bi bi-key me-1"></i>Password
+          <label class="form-label text-light fw-medium small" for="{{ form.password.id_for_label }}">
+            <i class="bi bi-key me-1 text-warning"></i>Security Password
           </label>
           {{ form.password }}
           {% for error in form.password.errors %}
@@ -45,15 +45,15 @@
           {% endfor %}
         </div>
 
-        <button class="btn btn-primary w-100 py-2 fw-semibold mb-3 shadow-sm" type="submit">
-          <i class="bi bi-box-arrow-in-right me-1"></i>Log In
+        <button class="btn btn-warning w-100 py-2 fw-bold text-dark mb-3 shadow" type="submit">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Authenticate Station Account
         </button>
       </form>
 
-      <div class="text-center pt-3 border-top small">
-        <span class="text-secondary">Don't have an account?</span>
-        <a class="text-primary fw-semibold text-decoration-none ms-1" href="{% url 'signup' %}">
-          Sign up here
+      <div class="text-center pt-3 border-top border-secondary border-opacity-25 small">
+        <span class="text-secondary">New facility or operator?</span>
+        <a class="text-warning fw-semibold text-decoration-none ms-1" href="{% url 'signup' %}">
+          Register new fuel account
         </a>
       </div>
     </div>
