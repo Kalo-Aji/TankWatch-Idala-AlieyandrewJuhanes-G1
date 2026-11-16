@@ -1,9 +1,15 @@
 from django.urls import path
-from .views import DashboardView, AdminPanelView
+from .views import (
+    AdminDashboardView,
+    DashboardDispatchView,
+    MemberDashboardView,
+    OperatorDashboardView,
+)
 
 urlpatterns = [
-    path("", DashboardView.as_view(), name="dashboard"),
-    path("admin-panel/", AdminPanelView.as_view(),
-         name="admin_panel"),
+    path("", DashboardDispatchView.as_view(), name="dashboard_dispatch"),
+    path("dashboard/", DashboardDispatchView.as_view(), name="dashboard"),
+    path("dashboard/admin/", AdminDashboardView.as_view(), name="admin_dashboard"),
+    path("dashboard/operator/", OperatorDashboardView.as_view(), name="operator_dashboard"),
+    path("dashboard/member/", MemberDashboardView.as_view(), name="member_dashboard"),
 ]
- 

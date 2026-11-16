@@ -79,11 +79,18 @@ WSGI_APPLICATION = 'tankwatch.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-# PostgreSQL / Supabase Configuration
 
+USE_SQLITE = os.getenv('USE_SQLITE', 'True').lower() in ('true', '1', 't')
 DATABASE_URL = os.getenv('DATABASE_URL', '').strip()
 
-if DATABASE_URL:
+if USE_SQLITE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+elif DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
@@ -98,7 +105,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME', 'tankwatch'),
+            'NAME': os.getenv('DB_NAME', 'postgres'),
             'USER': os.getenv('DB_USER', 'postgres'),
             'PASSWORD': os.getenv('DB_PASSWORD', ''),
             'HOST': os.getenv('DB_HOST', 'localhost'),
@@ -155,5 +162,6 @@ MAILERS = {
 }
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
-LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard_dispatch'
 LOGOUT_REDIRECT_URL = 'login'

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Client Dashboard | TankWatch{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="p-4 rounded-4 text-white shadow-sm" style="background: linear-gradient(135deg, #064e3b 0%, #047857 100%);">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill mb-2 fw-semibold">
+            <i class="bi bi-person-check me-1"></i>MEMBER & CONSUMER PORTAL
+          </span>
+          <h1 class="h2 fw-bold mb-1">Hello, {{ user.first_name|default:user.username }}!</h1>
+          <p class="text-white-50 mb-0">Your Facility Tank Supply & Personal Consumption Overview</p>
+        </div>
+        <a class="btn btn-light btn-sm px-3 fw-semibold text-success" href="{% url 'profile' %}">
+          <i class="bi bi-pencil-square me-1"></i>Manage Profile
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <!-- Tank Status Card -->
+  <div class="col-lg-8">
+    <div class="card card-elevated p-4 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-droplet-fill text-info me-2"></i>Connected Supply Tank</h5>
+        <span class="badge bg-success-subtle text-success border border-success">Online & Stable</span>
+      </div>
+
+      <div class="p-3 rounded-3 bg-light border mb-3">
+        <div class="row align-items-center">
+          <div class="col-md-7">
+            <h6 class="fw-bold mb-1">{{ assigned_tank }}</h6>
+            <p class="text-secondary small mb-0">Providing clean, filtered potable water for your sector.</p>
+          </div>
+          <div class="col-md-5 text-md-end mt-2 mt-md-0">
+            <span class="text-muted small d-block">Tank Storage Level</span>
+            <span class="fs-4 fw-bold text-success">82% Available</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <div class="p-3 border rounded-3 bg-white">
+            <span class="text-secondary small fw-bold text-uppercase d-block mb-1">Today's Flow</span>
+            <span class="fs-5 fw-bold text-dark">{{ daily_usage }}</span>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="p-3 border rounded-3 bg-white">
+            <span class="text-secondary small fw-bold text-uppercase d-block mb-1">Supply State</span>
+            <span class="fs-5 fw-bold text-success">{{ supply_status }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Quick Info Card -->
+  <div class="col-lg-4">
+    <div class="card card-elevated p-4 h-100">
+      <h5 class="fw-bold text-dark mb-3"><i class="bi bi-person-badge-fill text-primary me-2"></i>Account Summary</h5>
+      
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <div class="rounded-circle bg-primary-subtle text-primary fw-bold fs-4 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+          {{ user.first_name|default:user.username|slice:":1"|upper }}
+        </div>
+        <div>
+          <h6 class="fw-bold mb-0">{{ user.get_full_name|default:user.username }}</h6>
+          <small class="text-muted">@{{ user.username }}</small>
+        </div>
+      </div>
+
+      <ul class="list-group list-group-flush small mb-3">
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span class="text-secondary">Email</span>
+          <span class="fw-medium text-dark">{{ user.email|default:"Not set" }}</span>
+        </li>
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span class="text-secondary">Contact</span>
+          <span class="fw-medium text-dark">{{ user.contact_number|default:"Not provided" }}</span>
+        </li>
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span class="text-secondary">Role</span>
+          <span class="badge tw-badge-member">Client / Member</span>
+        </li>
+      </ul>
+
+      <a class="btn btn-outline-primary btn-sm w-100 mt-auto" href="{% url 'profile' %}">
+        <i class="bi bi-gear me-1"></i>Edit Profile Info
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Support / Report Issue Form -->
+<div class="row">
+  <div class="col-12">
+    <div class="card card-elevated p-4">
+      <h5 class="fw-bold text-dark mb-2"><i class="bi bi-flag-fill text-warning me-2"></i>Report a Tank Issue or Request Maintenance</h5>
+      <p class="text-secondary small mb-3">Notice low water pressure, discoloration, or tank anomalies? Send an instant notification to on-duty Operators.</p>
+      
+      <form onsubmit="event.preventDefault(); alert('Thank you! Your issue report has been logged and dispatched to the TankWatch Operators.');">
+        <div class="row g-2">
+          <div class="col-md-9">
+            <input type="text" class="form-control" placeholder="Describe the issue (e.g. Low flow rate in Sector 4)..." required>
+          </div>
+          <div class="col-md-3">
+            <button class="btn btn-primary w-100" type="submit">
+              <i class="bi bi-send-fill me-1"></i>Dispatch Report
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
