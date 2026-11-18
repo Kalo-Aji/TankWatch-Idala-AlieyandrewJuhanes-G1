@@ -1,8 +1,20 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light" data-bs-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (() => {
+      let savedTheme = "light";
+      try {
+        savedTheme = localStorage.getItem("tankwatch-theme") || "light";
+      } catch (error) {
+        console.warn("Could not read the saved TankWatch theme.", error);
+      }
+      document.documentElement.dataset.theme = savedTheme === "dark" ? "dark" : "light";
+      document.documentElement.setAttribute("data-bs-theme", document.documentElement.dataset.theme);
+    })();
+  </script>
   <title>{% block title %}TankWatch - Intelligent Fuel & LPG Gas Monitoring{% endblock %}</title>
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,6 +139,81 @@
       color: #64748b;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
+    :root[data-theme="light"] body {
+      background-color: #f1f5f9;
+      color: #1f2937;
+    }
+    :root[data-theme="light"] .tw-navbar {
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom-color: #e2e8f0;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+    }
+    :root[data-theme="light"] .tw-brand,
+    :root[data-theme="light"] .tw-navbar .nav-link {
+      color: #1f2937 !important;
+    }
+    :root[data-theme="light"] .tw-brand:hover {
+      color: #0f172a;
+    }
+    :root[data-theme="light"] .tw-navbar .navbar-toggler-icon {
+      filter: invert(1);
+    }
+    :root[data-theme="light"] .card-modern:not([style*="background"]) {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1);
+      color: #1f2937;
+    }
+    :root[data-theme="light"] .card-modern:not([style*="background"]) .text-white,
+    :root[data-theme="light"] .card-modern:not([style*="background"]) .text-light {
+      color: #1f2937 !important;
+    }
+    :root[data-theme="light"] .card-modern:not([style*="background"]) .bg-dark {
+      background-color: #f8fafc !important;
+    }
+    :root[data-theme="light"] .card-modern:not([style*="background"]) .bg-dark .text-white {
+      color: #1f2937 !important;
+    }
+    :root[data-theme="light"] .form-control,
+    :root[data-theme="light"] .form-select {
+      background-color: #ffffff;
+      border-color: #cbd5e1;
+      color: #1f2937;
+    }
+    :root[data-theme="light"] .form-control:focus,
+    :root[data-theme="light"] .form-select:focus {
+      background-color: #ffffff;
+      color: #1f2937;
+    }
+    :root[data-theme="light"] .table-modern {
+      color: #1f2937;
+      border-color: #e2e8f0;
+    }
+    :root[data-theme="light"] .table-modern thead th {
+      background: #eaf0f6;
+      color: #475569;
+      border-bottom-color: #cbd5e1;
+    }
+    :root[data-theme="light"] .table-modern tbody td {
+      color: #1f2937;
+      border-bottom-color: #e2e8f0;
+    }
+    :root[data-theme="light"] .table-hover tbody tr:hover {
+      background-color: #f8fafc;
+    }
+    :root[data-theme="light"] footer {
+      background: #ffffff;
+      color: #64748b;
+      border-top-color: #e2e8f0;
+    }
+    :root[data-theme="light"] .dropdown-menu-dark {
+      --bs-dropdown-bg: #ffffff;
+      --bs-dropdown-color: #1f2937;
+      --bs-dropdown-link-color: #1f2937;
+      --bs-dropdown-link-hover-bg: #f1f5f9;
+      --bs-dropdown-header-color: #64748b;
+      --bs-dropdown-border-color: #e2e8f0;
+    }
   </style>
   {% block extra_head %}{% endblock %}
 </head>
@@ -163,17 +250,14 @@
                   <i class="bi bi-broadcast text-info me-1"></i> Tank Telemetry & Ullage
                 </a>
               </li>
-            {% else %}
-              <li class="nav-item">
-                <a class="nav-link text-success fw-semibold" href="{% url 'member_dashboard' %}">
-                  <i class="bi bi-fuel-pump text-success me-1"></i> Fleet Fuel Supply
-                </a>
-              </li>
             {% endif %}
           {% endif %}
         </ul>
 
         <div class="d-flex align-items-center gap-2">
+          <button id="theme-toggle" class="btn btn-outline-secondary btn-sm rounded-pill px-3" type="button" aria-label="Switch to dark mode">
+            <i class="bi bi-moon-stars me-1" aria-hidden="true"></i><span>Dark mode</span>
+          </button>
           {% if user.is_authenticated %}
             <!-- Role Badge -->
             <span class="badge rounded-pill px-3 py-2 fw-semibold {% if user.is_administrator %}badge-fuel-admin{% elif user.is_operator %}badge-fuel-operator{% else %}badge-fuel-member{% endif %}">
@@ -259,5 +343,29 @@
 
   <!-- Bootstrap 5 JavaScript Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (() => {
+      const toggle = document.getElementById("theme-toggle");
+      if (!toggle) return;
+
+      const applyTheme = (theme) => {
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.setAttribute("data-bs-theme", theme);
+        try {
+          localStorage.setItem("tankwatch-theme", theme);
+        } catch (error) {
+          console.warn("Could not save the selected TankWatch theme.", error);
+        }
+        const darkMode = theme === "dark";
+        toggle.setAttribute("aria-label", `Switch to ${darkMode ? "light" : "dark"} mode`);
+        toggle.innerHTML = `<i class="bi ${darkMode ? "bi-sun" : "bi-moon-stars"} me-1" aria-hidden="true"></i><span>${darkMode ? "Light" : "Dark"} mode</span>`;
+      };
+
+      applyTheme(document.documentElement.dataset.theme || "light");
+      toggle.addEventListener("click", () => {
+        applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+      });
+    })();
+  </script>
 </body>
 </html>

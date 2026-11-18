@@ -1,0 +1,134 @@
+{% extends "admin_custom/base_admin.html" %}
+
+{% block title %}LPG Simulation | TankWatch Admin{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">LPG Simulation</h2>
+    <p class="text-secondary small mb-0">Live LPG levels for each client and member account.</p>
+  </div>
+</div>
+
+<div id="member-tank-grid" class="row g-4" data-status-url="{% url 'custom_admin:tank_status' %}">
+  {% for tank in member_tanks %}
+    <div class="col-md-6 col-xl-4" data-member-tank data-user-id="{{ tank.user_id }}">
+      <div class="card card-elevated h-100 p-3">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <span class="badge bg-secondary-subtle text-secondary small">{{ tank.user.get_role_display }}</span>
+            <h5 class="fw-bold mb-0 mt-2" data-field="name">{{ tank.user.get_full_name|default:tank.user.username }}</h5>
+            <small class="text-secondary">@<span data-field="username">{{ tank.user.username }}</span></small>
+          </div>
+          <span data-field="status" class="badge {% if tank.level_percent <= 15 %}bg-danger-subtle text-danger border border-danger{% elif tank.level_percent <= 40 %}bg-warning-subtle text-warning border border-warning{% else %}bg-success-subtle text-success border border-success{% endif %}">
+            {% if tank.level_percent <= 15 %}Low{% elif tank.level_percent <= 40 %}Refill soon{% else %}Normal{% endif %}
+          </span>
+        </div>
+
+        <div class="my-3 text-center">
+          <span data-field="level" class="display-6 fw-bold {% if tank.level_percent <= 15 %}text-danger{% elif tank.level_percent <= 40 %}text-warning{% else %}text-success{% endif %}">{{ tank.level_percent|floatformat:1 }}%</span>
+          <div class="text-secondary small"><span data-field="remaining">{{ tank.remaining_kg|floatformat:2 }}</span> kg of <span data-field="capacity">{{ tank.capacity_kg|floatformat:2 }}</span> kg</div>
+        </div>
+
+        <div data-field="progress" class="progress mb-3" style="height: 10px;" role="progressbar" aria-label="Remaining LPG" aria-valuenow="{{ tank.level_percent|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100">
+          <div data-field="progress-bar" class="progress-bar {% if tank.level_percent <= 15 %}bg-danger{% elif tank.level_percent <= 40 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ tank.level_percent|floatformat:1 }}%;"></div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center small border-top border-secondary border-opacity-25 pt-2 mt-auto">
+          <span class="text-secondary">Simulation status: <strong class="text-success">Live</strong></span>
+          <a class="text-warning text-decoration-none" href="{% url 'custom_admin:user_tank_level' tank.user_id %}">Adjust level &rarr;</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12" data-empty-state>
+      <div class="card card-elevated p-4 text-center text-secondary">
+        No client or member accounts are registered yet. Their LPG simulations will appear here.
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<script>
+  (() => {
+    const tankGrid = document.getElementById("member-tank-grid");
+    if (!tankGrid) return;
+
+    const refreshMemberTanks = async () => {
+      if (document.visibilityState === "hidden") return;
+
+      try {
+        const response = await fetch(tankGrid.dataset.statusUrl, {
+          cache: "no-store",
+          credentials: "same-origin",
+          headers: { "Accept": "application/json" }
+        });
+        if (!response.ok) throw new Error(`Status request failed: ${response.status}`);
+
+        const data = await response.json();
+        const tanksByUserId = new Map(
+          data.members.map((tank) => [String(tank.user_id), tank])
+        );
+
+        for (const card of tankGrid.querySelectorAll("[data-member-tank]")) {
+          const tank = tanksByUserId.get(card.dataset.userId);
+          if (!tank) continue;
+
+          const percent = Math.max(0, Math.min(100, Number(tank.level_percent)));
+          const remainingKg = Number(tank.remaining_kg);
+          const capacityKg = Number(tank.capacity_kg);
+          if (![percent, remainingKg, capacityKg].every(Number.isFinite)) {
+            throw new Error(`Invalid tank status for account ${card.dataset.userId}`);
+          }
+
+          const lowLevel = percent <= 15;
+          const warningLevel = percent > 15 && percent <= 40;
+          card.querySelector('[data-field="name"]').textContent = tank.name;
+          card.querySelector('[data-field="username"]').textContent = tank.username;
+          card.querySelector('[data-field="level"]').textContent = `${percent.toFixed(1)}%`;
+          card.querySelector('[data-field="remaining"]').textContent = remainingKg.toFixed(2);
+          card.querySelector('[data-field="capacity"]').textContent = capacityKg.toFixed(2);
+
+          const status = card.querySelector('[data-field="status"]');
+          status.textContent = lowLevel ? "Low" : warningLevel ? "Refill soon" : "Normal";
+          status.classList.toggle("bg-danger-subtle", lowLevel);
+          status.classList.toggle("text-danger", lowLevel);
+          status.classList.toggle("border-danger", lowLevel);
+          status.classList.toggle("bg-warning-subtle", warningLevel);
+          status.classList.toggle("text-warning", warningLevel);
+          status.classList.toggle("border-warning", warningLevel);
+          status.classList.toggle("bg-success-subtle", percent > 40);
+          status.classList.toggle("text-success", percent > 40);
+          status.classList.toggle("border-success", percent > 40);
+
+          const level = card.querySelector('[data-field="level"]');
+          level.classList.toggle("text-danger", lowLevel);
+          level.classList.toggle("text-warning", warningLevel);
+          level.classList.toggle("text-success", percent > 40);
+
+          const progress = card.querySelector('[data-field="progress"]');
+          progress.setAttribute("aria-valuenow", percent.toFixed(0));
+          const progressBar = card.querySelector('[data-field="progress-bar"]');
+          progressBar.style.width = `${percent}%`;
+          progressBar.classList.toggle("bg-danger", lowLevel);
+          progressBar.classList.toggle("bg-warning", warningLevel);
+          progressBar.classList.toggle("bg-success", percent > 40);
+
+          tanksByUserId.delete(card.dataset.userId);
+        }
+
+        for (const tank of tanksByUserId.values()) {
+          window.location.reload();
+          return;
+        }
+
+      } catch (error) {
+        console.error("Could not refresh LPG simulation statuses.", error);
+      }
+    };
+
+    refreshMemberTanks();
+    window.setInterval(refreshMemberTanks, 5000);
+  })();
+</script>
+{% endblock %}

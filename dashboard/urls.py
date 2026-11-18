@@ -1,15 +1,8 @@
-from django.urls import path
-from .views import (
-    AdminDashboardView,
-    DashboardDispatchView,
-    MemberDashboardView,
-    OperatorDashboardView,
-)
+from django.urls import include, path
 
 urlpatterns = [
-    path("", DashboardDispatchView.as_view(), name="dashboard_dispatch"),
-    path("dashboard/", DashboardDispatchView.as_view(), name="dashboard"),
-    path("dashboard/admin/", AdminDashboardView.as_view(), name="admin_dashboard"),
-    path("dashboard/operator/", OperatorDashboardView.as_view(), name="operator_dashboard"),
-    path("dashboard/member/", MemberDashboardView.as_view(), name="member_dashboard"),
+    path("", include("dashboard.features.dashboard_dispatch.urls")),
+    path("", include("dashboard.features.admin_dashboard.urls")),
+    path("", include("dashboard.features.operator_dashboard.urls")),
+    path("", include("dashboard.features.member_dashboard.urls")),
 ]

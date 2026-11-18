@@ -1,0 +1,211 @@
+{% extends "admin_custom/base_admin.html" %}
+
+{% block title %}User Account Management | TankWatch Admin{% endblock %}
+
+{% block extra_head %}
+<style>
+  .card-elevated .table.user-directory-table > tbody > tr > td {
+    color: #1f2937 !important;
+    background-color: #ffffff !important;
+    border-color: #e5e7eb !important;
+  }
+  .card-elevated .table.user-directory-table > tbody > tr > td:nth-child(1),
+  .card-elevated .table.user-directory-table > tbody > tr > td:nth-child(2) {
+    color: #000000 !important;
+  }
+  .card-elevated .table.user-directory-table > tbody > tr > td:first-child .fw-semibold,
+  .card-elevated .table.user-directory-table > tbody > tr > td:nth-child(2) {
+    color: #000000 !important;
+  }
+  .card-elevated .table.user-directory-table.table-hover > tbody > tr:hover > td {
+    background-color: #f3f4f6 !important;
+  }
+  .card-elevated .table.user-directory-table > tbody > tr > td code {
+    color: #1d4ed8;
+    background: #eff6ff;
+  }
+</style>
+{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+  <div>
+    <h2 class="fw-bold mb-1">User Account Directory</h2>
+    <p class="text-secondary small mb-0">Search, filter, authorize, edit, suspend, or delete user accounts</p>
+  </div>
+  <a class="btn btn-primary px-3 fw-semibold" href="{% url 'custom_admin:user_create' %}">
+    <i class="bi bi-person-plus-fill me-1"></i>Create New User
+  </a>
+</div>
+
+<!-- Search & Filter Form Card -->
+<div class="card card-elevated p-3 mb-4">
+  <form method="get" class="row g-2 align-items-center">
+    <div class="col-md-5">
+      <div class="input-group">
+        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+        <input type="text" name="q" class="form-control" placeholder="Search by username, name, email, contact..." value="{{ search_query }}">
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <select name="role" class="form-select">
+        <option value="">All Roles</option>
+        {% for value, label in roles %}
+          <option value="{{ value }}" {% if current_role == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-2">
+      <select name="status" class="form-select">
+        <option value="">All Statuses</option>
+        <option value="active" {% if current_status == "active" %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if current_status == "inactive" %}selected{% endif %}>Suspended</option>
+      </select>
+    </div>
+
+    <div class="col-md-2 d-flex gap-2">
+      <button class="btn btn-dark w-100" type="submit">Filter</button>
+      {% if search_query or current_role or current_status %}
+        <a class="btn btn-outline-secondary" href="{% url 'custom_admin:user_list' %}" title="Reset Filters">
+          <i class="bi bi-x-lg"></i>
+        </a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Users Table Card -->
+<div class="card card-elevated">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0 user-directory-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Full Name</th>
+          <th>Email Address</th>
+          <th>Contact Number</th>
+          <th>Role</th>
+          <th>LPG Simulation</th>
+          <th>Status</th>
+          <th>Date Joined</th>
+          <th class="text-end pe-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for account in users %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center fw-bold text-dark" style="width: 36px; height: 36px; min-width:36px;">
+                  {{ account.username|slice:":1"|upper }}
+                </div>
+                <div>
+                  <div class="fw-semibold">@{{ account.username }}</div>
+                  {% if account == user %}
+                    <span class="badge bg-primary-subtle text-primary" style="font-size: 0.65rem;">You</span>
+                  {% endif %}
+                </div>
+              </div>
+            </td>
+            <td>{{ account.get_full_name|default:"—" }}</td>
+            <td><code>{{ account.email|default:"No email" }}</code></td>
+            <td>{{ account.contact_number|default:"—" }}</td>
+            <td>
+              {% if account.role == "ADMIN" %}
+                <span class="badge badge-admin px-2 py-1"><i class="bi bi-shield-lock me-1"></i>Admin</span>
+              {% elif account.role == "OPERATOR" %}
+                <span class="badge badge-operator px-2 py-1"><i class="bi bi-activity me-1"></i>Operator</span>
+              {% else %}
+                <span class="badge badge-member px-2 py-1"><i class="bi bi-person me-1"></i>Member</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if account.role == "MEMBER" or account.role == "STUDENT" %}
+                {% if account.member_tank %}
+                  <span>{{ account.member_tank.level_percent|floatformat:1 }}%</span>
+                {% else %}
+                  <span class="text-muted">Not set</span>
+                {% endif %}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if account.is_active %}
+                <span class="badge bg-success-subtle text-success border border-success">Active</span>
+              {% else %}
+                <span class="badge bg-danger-subtle text-danger border border-danger">Suspended</span>
+              {% endif %}
+            </td>
+            <td class="small text-muted">{{ account.date_joined|date:"M d, Y" }}</td>
+            <td class="text-end pe-3">
+              <div class="btn-group btn-group-sm">
+                {% if account.role == "MEMBER" or account.role == "STUDENT" %}
+                  <a class="btn btn-outline-info" href="{% url 'custom_admin:user_tank_level' account.pk %}" title="Adjust LPG Simulation">
+                    <i class="bi bi-speedometer2"></i>
+                  </a>
+                {% endif %}
+                <!-- Edit Button -->
+                <a class="btn btn-outline-secondary" href="{% url 'custom_admin:user_edit' account.pk %}" title="Edit Account">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+
+                {% if account != user %}
+                  <!-- Toggle Status Form Button -->
+                  <form method="post" action="{% url 'custom_admin:user_toggle_status' account.pk %}" class="d-inline m-0" onsubmit="return confirm('Change status for user @{{ account.username }}?');">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-{% if account.is_active %}warning{% else %}success{% endif %}" type="submit" title="{% if account.is_active %}Suspend Account{% else %}Activate Account{% endif %}">
+                      <i class="bi bi-{% if account.is_active %}pause-circle{% else %}play-circle{% endif %}"></i>
+                    </button>
+                  </form>
+
+                  <!-- Delete Form Button -->
+                  <form method="post" action="{% url 'custom_admin:user_delete' account.pk %}" class="d-inline m-0" onsubmit="return confirm('Are you sure you want to PERMANENTLY delete user @{{ account.username }}? This cannot be undone.');">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-danger" type="submit" title="Delete Account">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="9" class="text-center py-5 text-muted">
+              <i class="bi bi-person-x fs-1 d-block mb-2 text-secondary"></i>
+              No user accounts found matching your filter criteria.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls -->
+  {% if is_paginated %}
+    <div class="card-footer py-3 d-flex justify-content-between align-items-center" style="background:#0f172a; border-top:1px solid rgba(255,255,255,0.08);">
+      <small class="text-secondary">
+        Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      </small>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&role={{ current_role }}&status={{ current_status }}">&laquo; Prev</a>
+            </li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&role={{ current_role }}&status={{ current_status }}">Next &raquo;</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

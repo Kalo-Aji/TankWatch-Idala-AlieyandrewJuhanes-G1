@@ -1,0 +1,45 @@
+{% extends "admin_custom/base_admin.html" %}
+
+{% block title %}Adjust LPG Simulation | TankWatch Admin{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="fw-bold mb-1">Adjust LPG Simulation</h2>
+        <p class="text-secondary small mb-0">Simulation control for {{ member.get_full_name|default:member.username }} (@{{ member.username }})</p>
+      </div>
+      <a class="btn btn-outline-secondary btn-sm" href="{% url 'custom_admin:user_list' %}">
+        <i class="bi bi-arrow-left me-1"></i>Back to Directory
+      </a>
+    </div>
+
+    <div class="card card-elevated p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-secondary">Current tank level</span>
+        <strong class="text-white">{{ tank.level_percent|floatformat:1 }}% &middot; {{ tank.remaining_kg|floatformat:2 }} kg / {{ tank.capacity_kg|floatformat:2 }} kg</strong>
+      </div>
+      <div class="progress mb-4" role="progressbar" aria-label="Current tank level" aria-valuenow="{{ tank.level_percent|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100" style="height: 0.75rem;">
+        <div class="progress-bar {% if tank.level_percent <= 15 %}bg-danger{% elif tank.level_percent <= 40 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ tank.level_percent|floatformat:1 }}%;"></div>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        <label class="form-label fw-semibold" for="{{ form.level_percent.id_for_label }}">Set tank level (%)</label>
+        {{ form.level_percent }}
+        {% for error in form.level_percent.errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+        <div class="form-text text-secondary">Choose a value from 0 to 100. The remaining gas amount will be calculated using this user's {{ tank.capacity_kg|floatformat:2 }} kg tank capacity.</div>
+        <div class="d-flex gap-2 mt-4">
+          <button class="btn btn-primary px-4 fw-semibold" type="submit">
+            <i class="bi bi-check2-circle me-1"></i>Save Tank Level
+          </button>
+          <a class="btn btn-outline-secondary" href="{% url 'custom_admin:user_list' %}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

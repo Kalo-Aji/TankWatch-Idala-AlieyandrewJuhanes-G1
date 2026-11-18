@@ -1,3 +1,6 @@
-from django.db import models
+from dashboard.features.member_dashboard.models import (
+    ConsumptionRecord,
+    MemberTank,
+)
 
-# Create your models here.
+__all__ = ["ConsumptionRecord", "MemberTank"]

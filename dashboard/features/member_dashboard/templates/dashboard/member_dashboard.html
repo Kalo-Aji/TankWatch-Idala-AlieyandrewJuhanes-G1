@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}LPG Simulation | TankWatch{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card card-modern p-4" style="background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%); border-left: 5px solid #10b981;">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <span class="badge bg-success text-white px-3 py-1 rounded-pill mb-2 fw-semibold">
+            <i class="bi bi-fire me-1"></i>LPG SIMULATION
+          </span>
+          <h1 class="h2 fw-bold mb-1 text-white">Hello, {{ user.first_name|default:user.username }}!</h1>
+          <p class="text-white-50 mb-0">A live, account-specific LPG cylinder simulation</p>
+        </div>
+        <a class="btn btn-outline-light btn-sm px-3 fw-semibold" href="{% url 'profile' %}">
+          <i class="bi bi-person-gear me-1"></i>Account Settings
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <!-- Tank Status Card -->
+  <div class="col-lg-8">
+    <div class="card card-modern p-4 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-white mb-0"><i class="bi bi-fire text-warning me-2"></i>Your LPG Simulation</h5>
+      </div>
+
+      <div id="lpg-simulation" data-status-url="{% url 'member_tank_status' %}" class="p-3 rounded-3 mb-3 border border-secondary border-opacity-25" style="background: rgba(0, 0, 0, 0.25);">
+        <div class="row align-items-center">
+          <div class="col-md-7">
+            <h5 class="fw-bold text-white mb-1">{{ assigned_tank }}</h5>
+            <p class="text-secondary small mb-0">This simulated LPG tank and its consumption are saved separately for your account.</p>
+          </div>
+          <div class="col-md-5 text-md-end mt-2 mt-md-0">
+            <span class="text-secondary small d-block">Current Tank Level</span>
+            <span id="tank-level-value" aria-live="polite" class="fs-3 fw-bold {% if remaining_percent <= 15 %}text-danger{% elif remaining_percent <= 40 %}text-warning{% else %}text-success{% endif %} font-monospace">{{ remaining_percent|floatformat:1 }}% Full</span>
+            <span class="text-secondary small d-block"><span id="tank-remaining-kg">{{ tank.remaining_kg|floatformat:2 }}</span> kg of <span id="tank-capacity-kg">{{ tank.capacity_kg|floatformat:2 }}</span> kg</span>
+          </div>
+        </div>
+        <div id="tank-level-progress" class="progress mt-3" role="progressbar" aria-label="Remaining gas" aria-valuenow="{{ remaining_percent|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100" style="height: 0.6rem;">
+          <div id="tank-level-bar" class="progress-bar {% if remaining_percent <= 15 %}bg-danger{% elif remaining_percent <= 40 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ remaining_percent|floatformat:1 }}%;"></div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <div class="p-3 rounded-3 border border-secondary border-opacity-25 bg-dark">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="text-secondary small fw-bold text-uppercase">Today's Gas Usage</span>
+              <span class="badge bg-success text-white">Petron</span>
+            </div>
+            <span class="fs-5 fw-bold text-warning font-monospace">{{ daily_usage|floatformat:2 }} kg LPG Consumed Today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Quick Info Card -->
+  <div class="col-lg-4">
+    <div class="card card-modern p-4 h-100">
+      <h5 class="fw-bold text-white mb-3"><i class="bi bi-person-badge text-warning me-2"></i>Account Summary</h5>
+      
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <div class="rounded-circle bg-warning bg-opacity-10 text-warning fw-bold fs-4 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+          {{ user.first_name|default:user.username|slice:":1"|upper }}
+        </div>
+        <div>
+          <h6 class="fw-bold mb-0 text-white">{{ user.get_full_name|default:user.username }}</h6>
+          <small class="text-secondary">@{{ user.username }}</small>
+        </div>
+      </div>
+
+      <ul class="list-group list-group-flush small mb-3">
+        <li class="list-group-item bg-transparent text-secondary px-0 d-flex justify-content-between border-secondary border-opacity-25">
+          <span>Email</span>
+          <span class="fw-medium text-white">{{ user.email|default:"Not set" }}</span>
+        </li>
+        <li class="list-group-item bg-transparent text-secondary px-0 d-flex justify-content-between border-secondary border-opacity-25">
+          <span>Contact</span>
+          <span class="fw-medium text-white">{{ user.contact_number|default:"Not provided" }}</span>
+        </li>
+      </ul>
+
+      <a class="btn btn-outline-warning btn-sm w-100 mt-auto" href="{% url 'profile' %}">
+        <i class="bi bi-gear me-1"></i>Edit Profile
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card card-modern p-4">
+      <h5 class="fw-bold text-white mb-2"><i class="bi bi-speedometer2 text-warning me-2"></i>Record Simulated Gas Consumption</h5>
+      <p class="text-secondary small mb-3">Enter how much LPG to consume in your simulation. Your balance and tank level will update.</p>
+      <form method="post" class="row g-2">
+        {% csrf_token %}
+        <div class="col-12">
+          <label class="form-label text-white" for="{{ consumption_form.amount_kg.id_for_label }}">{{ consumption_form.amount_kg.label }}</label>
+        </div>
+        <div class="col-12">
+          <div class="row g-2">
+            <div class="col-md-8">
+              {{ consumption_form.amount_kg }}
+              {% for error in consumption_form.amount_kg.errors %}
+                <div class="text-danger small mt-1">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="col-md-4 d-flex">
+              <button id="save-consumption-button" class="btn btn-warning w-100 h-100 fw-bold text-dark" type="submit" {% if tank.remaining_kg <= 0 %}disabled{% endif %}>
+                <i class="bi bi-check-circle me-1"></i>Record Consumption
+              </button>
+            </div>
+            <div class="col-md-8">
+              <div id="consumption-help" class="form-text text-secondary">Enter an amount from 0.01 kg up to your remaining {{ tank.remaining_kg|floatformat:2 }} kg.</div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      {% if consumption_records %}
+        <hr class="border-secondary border-opacity-25 my-4">
+        <h6 class="fw-bold text-white mb-3">Consumption History</h6>
+        <div class="table-responsive">
+          <table class="table table-modern align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in consumption_records %}
+                <tr>
+                  <td>{{ record.created_at|date:"M d, Y - H:i" }}</td>
+                  <td class="text-warning fw-semibold">{{ record.amount_kg|floatformat:2 }} kg</td>
+                  <td class="text-end text-nowrap">
+                    <a class="btn btn-outline-secondary btn-sm" href="{% url 'consumption_edit' record.pk %}" aria-label="Edit {{ record.amount_kg|floatformat:2 }} kg consumption record">
+                      <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <form method="post" action="{% url 'consumption_delete' record.pk %}" class="d-inline" onsubmit="return confirm('Delete this consumption record and restore the gas to your tank?');">
+                      {% csrf_token %}
+                      <button class="btn btn-outline-danger btn-sm" type="submit" aria-label="Delete {{ record.amount_kg|floatformat:2 }} kg consumption record">
+                        <i class="bi bi-trash3"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-secondary small mt-4">No LPG consumption has been recorded yet.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const simulation = document.getElementById("lpg-simulation");
+    if (!simulation) return;
+
+    const levelValue = document.getElementById("tank-level-value");
+    const remainingValue = document.getElementById("tank-remaining-kg");
+    const capacityValue = document.getElementById("tank-capacity-kg");
+    const progress = document.getElementById("tank-level-progress");
+    const progressBar = document.getElementById("tank-level-bar");
+    const amountInput = document.getElementById("{{ consumption_form.amount_kg.id_for_label }}");
+    const consumptionHelp = document.getElementById("consumption-help");
+    const saveButton = document.getElementById("save-consumption-button");
+
+    const refreshSimulation = async () => {
+      if (document.visibilityState === "hidden") return;
+
+      try {
+        const response = await fetch(simulation.dataset.statusUrl, {
+          cache: "no-store",
+          credentials: "same-origin",
+          headers: { "Accept": "application/json" }
+        });
+        if (!response.ok) throw new Error(`Status request failed: ${response.status}`);
+
+        const data = await response.json();
+        const percent = Math.max(0, Math.min(100, Number(data.level_percent)));
+        const remainingKg = Number(data.remaining_kg);
+        const capacityKg = Number(data.capacity_kg);
+        if (![percent, remainingKg, capacityKg].every(Number.isFinite)) {
+          throw new Error("Status response contained invalid tank values");
+        }
+
+        const lowLevel = percent <= 15;
+        const warningLevel = percent > 15 && percent <= 40;
+        levelValue.textContent = `${percent.toFixed(1)}% Full`;
+        levelValue.classList.toggle("text-danger", lowLevel);
+        levelValue.classList.toggle("text-warning", warningLevel);
+        levelValue.classList.toggle("text-success", percent > 40);
+        remainingValue.textContent = remainingKg.toFixed(2);
+        capacityValue.textContent = capacityKg.toFixed(2);
+        progress.setAttribute("aria-valuenow", percent.toFixed(0));
+        progressBar.style.width = `${percent}%`;
+        progressBar.classList.toggle("bg-danger", lowLevel);
+        progressBar.classList.toggle("bg-warning", warningLevel);
+        progressBar.classList.toggle("bg-success", percent > 40);
+        amountInput.max = remainingKg.toFixed(2);
+        consumptionHelp.textContent =
+          `Enter an amount from 0.01 kg up to your remaining ${remainingKg.toFixed(2)} kg.`;
+        saveButton.disabled = remainingKg <= 0;
+      } catch (error) {
+        console.error("Could not refresh LPG simulation status.", error);
+      }
+    };
+
+    refreshSimulation();
+    window.setInterval(refreshSimulation, 5000);
+  })();
+</script>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Edit LPG Consumption | TankWatch{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card card-modern p-4">
+      <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+        <div>
+          <h1 class="h4 fw-bold text-white mb-1">Edit Consumption Record</h1>
+          <p class="text-secondary small mb-0">
+            Recorded {{ record.created_at|date:"M d, Y - H:i" }}.
+            Your tank balance will be adjusted with this change.
+          </p>
+        </div>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'member_dashboard' %}">Back</a>
+      </div>
+
+      <div class="alert alert-info py-2">
+        Current balance: <strong>{{ tank.remaining_kg|floatformat:2 }} kg</strong> of
+        {{ tank.capacity_kg|floatformat:2 }} kg
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        <label class="form-label text-white" for="{{ form.amount_kg.id_for_label }}">{{ form.amount_kg.label }}</label>
+        {{ form.amount_kg }}
+        {% for error in form.amount_kg.errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+        <div class="form-text text-secondary">Enter at least 0.01 kg and no more than the gas available for this adjustment.</div>
+
+        <div class="d-flex gap-2 mt-4">
+          <button class="btn btn-warning fw-bold text-dark" type="submit">Save Changes</button>
+          <a class="btn btn-outline-secondary" href="{% url 'member_dashboard' %}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

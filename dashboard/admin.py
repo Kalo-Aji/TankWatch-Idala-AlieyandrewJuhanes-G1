@@ -1,3 +1,1 @@
-from django.contrib import admin
-
-# Register your models here.
+from dashboard.features.member_dashboard import admin as member_dashboard_admin

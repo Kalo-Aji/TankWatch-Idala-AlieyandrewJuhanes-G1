@@ -18,6 +18,16 @@ import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Feature-owned templates live beside the code that renders them.
+FEATURE_TEMPLATE_DIRS = [
+    template_dir
+    for features_dir in (
+        BASE_DIR / "accounts" / "features",
+        BASE_DIR / "dashboard" / "features",
+    )
+    for template_dir in features_dir.rglob("templates")
+]
+
 # Load environment variables from .env file
 load_dotenv(BASE_DIR / '.env')
 
@@ -62,7 +72,7 @@ ROOT_URLCONF = 'tankwatch.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
+        'DIRS': [BASE_DIR / "templates", *FEATURE_TEMPLATE_DIRS],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
